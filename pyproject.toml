@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vendor.score"
+version = "0.1.0"
+description = "Weighted vendor decision matrices that tell you whether the winner survives a change in priorities: ranking, sensitivity, and margin. Dependency-free Python."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "AndMaverick LLC" }]
+
+[tool.setuptools.packages.find]
+include = ["vendor_score*"]
