@@ -1,10 +1,10 @@
 # vendor.score
 
-Every vendor decision comes down to a weighted scorecard, and every scorecard hides the same question: would the answer change if our priorities shifted a little? vendor.score ranks vendors and then stress-tests the result, so you learn whether the winner is robust or an artifact of the weights. Standard library only.
+Every vendor decision comes down to a weighted scorecard, and every scorecard hides the same question: would the answer change if our priorities shifted a little? vendor.score ranks vendors and then stress tests the result, so you learn whether the winner is robust or an artifact of the weights. Standard library only.
 
 Version 0.2 turns the ranking into a defensible exhibit. It answers, with exact arithmetic where that is possible and a seeded simulation where it is not, the questions a board asks of a scorecard:
 
-- Can the runner-up ever win, under any weighting, and with which weights? (solved exactly)
+- Can the second place vendor ever win, under any weighting, and with which weights? (solved exactly)
 - How far can each weight move before the leader loses first place, and who takes over? (exact)
 - What is the smallest reweighting that lets each rival draw level? (exact)
 - Which single score, if wrong, would change the winner? Check that one first. (exact)
@@ -41,7 +41,7 @@ win_probability_uniform(scores, "A", "B")   # chance A beats B if the weights ar
 
 ## Scenario files
 
-A scorecard with measured criteria, uncertain scores, must-haves, stakeholders and pass/fail gates lives in one JSON file. Loading is strict: an unknown key, a repeated key, a missing score, a number outside its range or a NaN is an error, never a silent default.
+A scorecard with measured criteria, uncertain scores, minimum scores, stakeholders and pass/fail gates lives in one JSON file. Loading is strict: an unknown key, a repeated key, a missing score, a number outside its range or a NaN is an error, never a silent default.
 
 ```json
 {
@@ -62,7 +62,7 @@ A scorecard with measured criteria, uncertain scores, must-haves, stakeholders a
 ```
 
 - **Scores** are a number, a range (`low`/`high`, or `low`/`mode`/`high`), or a list of rater scores. Raw measures such as dollars, days and percent uptime are converted to 0 to 10 by a linear, piecewise or category value function.
-- **Must-haves** remove a vendor that scores below the threshold. At the best estimate it is dropped from the ranking; inside the simulation the check is made on every draw, so a vendor that only sometimes misses is penalized by exactly how often.
+- **Minimum scores** (`must_have` in the file) remove a vendor that scores below the threshold. At the best estimate it is dropped from the ranking; inside the simulation the check is made on every draw, so a vendor that only sometimes misses is penalized by exactly how often.
 - **Weights** do not have to sum to one. The simulation scatters them around the stated weights (`concentration`, higher is tighter), draws them uniformly (`uniform`, know nothing), or holds them fixed.
 - **Gates** are `leader_must_be`, `min_margin`, `min_prob_leader_best`, `min_flip_distance`, `max_leader_disqualified` and `unanimous_stakeholders`.
 
@@ -132,18 +132,18 @@ Gates
 RESULT: FAIL
 ```
 
-The leader comes first in only 61 percent of trials, a runner-up that finance prefers draws level after just 2.7 percent of the weight moves, and the three stakeholders back two different vendors. The ranking looked decisive; the stress test says the board should not sign this yet.
+The leader comes first in only 61 percent of trials, a second place vendor that finance prefers draws level after just 2.7 percent of the weight moves, and the three stakeholders back two different vendors. The ranking looked decisive; the stress test says the board should not sign this yet.
 
 ## Design
 
-- **Exact where it can be.** The best-case weighting, the flip distance, the weight windows and the score levers are solved in rational arithmetic (a small simplex with Bland's rule, `vendor_score/lp.py`). A tie is a tie and a zero is a zero; there is no tolerance to tune, and the weighting returned as proof is one anyone can check by hand.
+- **Exact where it can be.** The best case weighting, the flip distance, the weight windows and the score levers are solved in rational arithmetic (a small simplex with Bland's rule, `vendor_score/lp.py`). A tie is a tie and a zero is a zero; there is no tolerance to tune, and the weighting returned as proof is one anyone can check by hand.
 - **Simulation only where it must be.** Uncertain scores and uncertain weights are sampled with one seeded generator, and the report prints trial count, seed and a Wilson interval.
 - **Pinned.** Every result carries a SHA-256 fingerprint of the scenario, the library version and the method. Two people running the same file get the same fingerprint and the same numbers.
-- **Bad input fails loudly.** Missing scores and out-of-range values raise, instead of quietly skewing a seven-figure decision.
+- **Bad input fails loudly.** Missing scores and out of range values raise, instead of quietly skewing a seven figure decision.
 
 ## Evidence
 
-The exact routines are tested against reference implementations that share no code with them (`tests/oracles.py`): brute-force vertex enumeration of the linear program, a grid search over every weighting, exact polygon clipping for probabilities, a quadratic Kendall tau. `python examples/evaluate.py` reruns the comparison from fixed seeds:
+The exact routines are tested against reference implementations that share no code with them (`tests/oracles.py`): brute force vertex enumeration of the linear program, a grid search over every weighting, exact polygon clipping for probabilities, a quadratic Kendall tau. `python examples/evaluate.py` reruns the comparison from fixed seeds:
 
 ```
 possibly-best vs exact vertex enumeration: 1002 vendors on 250 scorecards, verdicts differing 0, largest gap in lead 0.0e+00
@@ -154,16 +154,16 @@ weight windows vs a 1% scan of each weight: 23974 points checked, disagreements 
 full analysis of 10 vendors x 8 criteria with 20000 trials: 0.5 s (leader v8)
 ```
 
-The suite has 100+ tests: oracles, invariances (scaling the weights, reordering criteria, shifting a criterion by a constant leave the answers unchanged), strict-input rejection, gate behavior, exit codes, and identical output under different `PYTHONHASHSEED` values.
+The suite has 100+ tests: oracles, invariances (scaling the weights, reordering criteria, shifting a criterion by a constant leave the answers unchanged), strict input rejection, gate behavior, exit codes, and identical output under different `PYTHONHASHSEED` values.
 
 ## Honest limits
 
 - The tool checks the decision, not the inputs. If a score is wrong, the analysis is exactly right about a wrong scorecard. The score levers list which numbers deserve evidence first.
-- The model is a weighted sum. It assumes criteria trade off linearly and are independent. Where a failure on one criterion cannot be bought back, use a must-have.
+- The model is a weighted sum. It assumes criteria trade off linearly and are independent. Where a failure on one criterion cannot be bought back, set a minimum score.
 - "Distance" is the share of total weight that has to move (half the L1 change). Weight windows scale the other weights in proportion. Both are conventions, stated in the output, and not the only reasonable ones.
 - Estimates for different vendors and criteria are drawn independently. Correlated errors (one analyst scoring everything high) are not modeled.
 - With uncertain scores, the deterministic sections use each estimate's mean. The simulation is where the ranges matter.
-- The closed-form unknown-weights probability separates exactly tied score differences by 1e-9, which moves the answer by less than 1e-6.
+- The closed form unknown weights probability separates exactly tied score differences by 1e-9, which moves the answer by less than 1e-6.
 - Exact results are identical everywhere. Simulation results are reproducible for a given seed on a given Python version; a different Python's random generator may differ in the last digits.
 
 ## Tests
