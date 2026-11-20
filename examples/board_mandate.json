@@ -1,0 +1,28 @@
+{
+  "name": "Payments processor, board mandate",
+  "criteria": {
+    "fees":        {"weight": 0.30, "value": {"worst": 3.2, "best": 2.1}},
+    "reliability": {"weight": 0.25},
+    "fraud_tools": {"weight": 0.20, "must_have": 6},
+    "settlement":  {"weight": 0.15, "value": {"worst": 5, "best": 1}},
+    "roadmap":     {"weight": 0.10}
+  },
+  "vendors": {
+    "Halyard": {"fees": 2.45, "reliability": 8.2, "fraud_tools": {"low": 5, "high": 9}, "settlement": 2, "roadmap": [6, 7, 8]},
+    "Marlin":  {"fees": 2.75, "reliability": 8.8, "fraud_tools": 8.5, "settlement": 1, "roadmap": [8, 8, 9]},
+    "Tidewater": {"fees": 2.30, "reliability": 7.0, "fraud_tools": {"low": 6, "high": 8}, "settlement": 3, "roadmap": [5, 6, 6]}
+  },
+  "stakeholders": {
+    "finance":     {"fees": 0.50, "reliability": 0.15, "fraud_tools": 0.10, "settlement": 0.20, "roadmap": 0.05},
+    "engineering": {"fees": 0.10, "reliability": 0.40, "fraud_tools": 0.15, "settlement": 0.10, "roadmap": 0.25},
+    "risk":        {"fees": 0.10, "reliability": 0.25, "fraud_tools": 0.50, "settlement": 0.10, "roadmap": 0.05}
+  },
+  "simulation": {"trials": 20000, "seed": 11, "weights": "stated", "concentration": 40},
+  "gates": {
+    "min_margin": 0.25,
+    "min_prob_leader_best": 0.7,
+    "min_flip_distance": 0.05,
+    "unanimous_stakeholders": true,
+    "max_leader_disqualified": 0.05
+  }
+}

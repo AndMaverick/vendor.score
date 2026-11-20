@@ -1,0 +1,36 @@
+{
+  "name": "Cloud platform selection",
+  "criteria": {
+    "annual_cost":   {"weight": 0.25, "value": {"worst": 1200000, "best": 600000}},
+    "uptime":        {"weight": 0.20, "value": {"points": [[99.0, 0], [99.5, 4], [99.9, 8], [99.99, 10]]}},
+    "security":      {"weight": 0.20, "must_have": 5},
+    "integration":   {"weight": 0.15, "value": {"worst": 180, "best": 30}},
+    "support":       {"weight": 0.10},
+    "exit_terms":    {"weight": 0.10, "value": {"categories": {"portable": 10, "standard": 6, "locked_in": 1}}}
+  },
+  "vendors": {
+    "Aster": {
+      "annual_cost": {"low": 720000, "mode": 780000, "high": 900000},
+      "uptime": 99.95, "security": 8.5, "integration": {"low": 40, "high": 70},
+      "support": [7, 8, 8, 9], "exit_terms": "portable"
+    },
+    "Brightwave": {
+      "annual_cost": {"low": 640000, "mode": 700000, "high": 860000},
+      "uptime": 99.8, "security": {"low": 5.5, "high": 8}, "integration": {"low": 60, "high": 120},
+      "support": [5, 6, 7, 6], "exit_terms": "standard"
+    },
+    "Cobalt": {
+      "annual_cost": {"low": 900000, "mode": 950000, "high": 1100000},
+      "uptime": 99.99, "security": 9, "integration": {"low": 30, "high": 50},
+      "support": [8, 9, 9, 8], "exit_terms": "locked_in"
+    }
+  },
+  "simulation": {"trials": 20000, "seed": 7, "weights": "stated", "concentration": 60},
+  "gates": {
+    "leader_must_be": "Aster",
+    "min_margin": 0.3,
+    "min_prob_leader_best": 0.6,
+    "min_flip_distance": 0.05,
+    "max_leader_disqualified": 0.01
+  }
+}

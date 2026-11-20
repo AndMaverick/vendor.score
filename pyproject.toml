@@ -4,12 +4,30 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vendor.score"
-version = "0.1.0"
-description = "Weighted vendor decision matrices that tell you whether the winner survives a change in priorities: ranking, sensitivity, and margin. Dependency-free Python."
+version = "0.2.0"
+description = "Vendor decisions that survive scrutiny: exact weight windows, minimum weight shifts that change the winner, which vendors can ever win, score leverage, acceptability under uncertain weights and scores, must-haves, stakeholders and CI gates. Dependency-free Python."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "AndMaverick LLC" }]
 
+[project.scripts]
+vendor-score = "vendor_score.cli:main"
+
+[tool.setuptools.package-data]
+vendor_score = ["py.typed"]
+
 [tool.setuptools.packages.find]
 include = ["vendor_score*"]
+
+[tool.ruff]
+line-length = 130
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+strict = true
+files = ["vendor_score"]
