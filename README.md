@@ -1,6 +1,6 @@
 # vendor.score
 
-Every vendor decision comes down to a weighted scorecard, and every scorecard hides the same question: would the answer change if our priorities shifted a little? vendor.score ranks vendors and then stress tests the result, so you learn whether the winner is robust or an artifact of the weights. Standard library only.
+The scorecard says Vendor A wins by three points. Then finance asks for price to count a little more, and Vendor B is first. Every vendor decision comes down to a weighted scorecard, and every scorecard hides the same question: would the answer change if our priorities shifted a little? vendor.score ranks vendors and then stress tests the result, so you learn whether the winner is robust or an artifact of the weights. Standard library only.
 
 Version 0.2 turns the ranking into a defensible exhibit. It answers, with exact arithmetic where that is possible and a seeded simulation where it is not, the questions a board asks of a scorecard:
 
@@ -171,6 +171,8 @@ The suite has 100+ tests: oracles, invariances (scaling the weights, reordering 
 ```
 python -m unittest discover -s tests -t . -v
 ```
+
+**Related repositories:** [build.buy](https://github.com/AndMaverick/build.buy) answers the earlier question, whether to build or buy at all. [readiness.index](https://github.com/AndMaverick/readiness.index) scores whether the organization is ready to adopt what it picks.
 
 MIT licensed. Built by [AndMaverick LLC](https://www.andmaverick.com).
 
